@@ -14,7 +14,7 @@ RUN mvn -B package -DskipTests
 FROM eclipse-temurin:21-jre
 LABEL authors="corzv"
 WORKDIR /app
- 
+
 # Quarkus
 COPY --from=build /build/target/quarkus-app/ ./
 USER 10001
