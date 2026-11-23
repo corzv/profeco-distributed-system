@@ -67,5 +67,15 @@ services:
       notificaciones:
         condition: service_healthy
 
+  gateway:
+    image: nginx:1.27-alpine
+    ports:
+      - "8000:80"
+    volumes:
+      - ./gateway/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - api-profeco
+      - notificaciones
+
 volumes:
   pgdata:
