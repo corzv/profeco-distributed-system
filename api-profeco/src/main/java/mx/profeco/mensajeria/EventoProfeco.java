@@ -5,6 +5,8 @@ import java.time.format.DateTimeFormatter;
 
 public class EventoProfeco {
     public static final String OFERTA_PUBLICADA = "OFERTA_PUBLICADA";
+    public static final String REPORTE_CREADO = "REPORTE_CREADO";
+    public static final String MULTA_APLICADA = "MULTA_APLICADA";
 
     private String tipo;
     private String mensaje;
