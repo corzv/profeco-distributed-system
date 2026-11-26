@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Profeco · Notificaciones</title>
+<style>
+body{font:17px system-ui;max-width:800px;margin:3rem auto;padding:0 1rem;background:#f4f6f8;color:#183044}li{background:white;padding:1rem;margin:1rem 0;border-left:4px solid #087f8c;list-style:none}ul{padding:0}small{display:block;color:#526574}button{padding:.6rem 1rem}
+</style>
+<h1>Notificaciones Profeco</h1>
+<p id="estado" role="status">Conectando…</p>
+<p>Avisos públicos en vivo: ofertas, reportes y multas.</p>
+<button id="limpiar">Limpiar avisos</button>
+<ul id="avisos" aria-live="polite"></ul>
+<script>
+const estado = document.querySelector('#estado');
+const avisos = document.querySelector('#avisos');
+const source = new EventSource('/notificaciones/stream');
+source.onopen = () => estado.textContent = 'Conectado · esperando eventos';
+source.onerror = () => estado.textContent = 'Conexión interrumpida · reconectando…';
+source.onmessage = ({data}) => {
+  const evento = JSON.parse(data);
+  const item = document.createElement('li');
+  const titulo = document.createElement('strong');
+  titulo.textContent = evento.tipo;
+  const mensaje = document.createElement('p');
+  mensaje.textContent = evento.mensaje;
+  const detalle = document.createElement('small');
+  detalle.textContent = `${evento.fecha} · Tienda: ${evento.tiendaId ?? '—'} · Producto: ${evento.productoId ?? '—'}`;
+  item.append(titulo, mensaje, detalle);
+  avisos.prepend(item);
+  while (avisos.children.length > 100) avisos.lastElementChild.remove();
+};
+document.querySelector('#limpiar').onclick = () => avisos.replaceChildren();
+window.addEventListener('pagehide', () => source.close());
+</script>
+</html>

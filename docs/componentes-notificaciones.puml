@@ -1,0 +1,39 @@
+@startuml
+title Profeco — Componentes actualizados (entrega Abraham Coronel)
+skinparam componentStyle uml2
+package "Clientes" {
+  component "Cliente web" as Web
+  component "Aplicación móvil" as Movil
+}
+package "Backend Profeco" {
+  component "API Profeco :8080\nOtros integrantes" as API
+  package "Notificaciones :8082 — Abraham" {
+    component "EventoConsumer\nValidación + ACK/NACK" as Consumer
+    component "NotificacionBroadcaster\nDifusión en memoria" as Broadcast
+    component "NotificacionResource\nGET /notificaciones/stream" as SSE
+    component "Página de demostración" as Demo
+    Consumer --> Broadcast : evento válido
+    Broadcast --> SSE : Multi<EventoProfeco>
+    Demo --> SSE : EventSource
+  }
+}
+package "Infraestructura — Manuel" {
+  queue "RabbitMQ :5672\nExchange topic: profeco.eventos\nCola durable: profeco.eventos" as Rabbit
+  queue "profeco.eventos.dlq\nExchange: DLX" as DLQ
+  database "PostgreSQL :5432" as DB
+}
+Web --> API : HTTPS / REST
+Movil --> API : HTTPS / REST
+Web --> SSE : HTTP(S) / SSE
+Movil --> SSE : HTTP(S) / SSE
+API --> DB : TCP
+API --> Rabbit : AMQP / JSON
+Rabbit --> Consumer : AMQP / JSON
+Rabbit --> DLQ : rechazo sin reencolar
+note bottom of SSE
+  SSE sustituye WebSocket del diagrama original.
+  Tipos: OFERTA_PUBLICADA, REPORTE_CREADO,
+  MULTA_APLICADA. Avisos públicos en vivo.
+  Una instancia; sin historial ni Firebase.
+end note
+@enduml
