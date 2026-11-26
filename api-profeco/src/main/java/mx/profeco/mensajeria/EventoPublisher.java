@@ -2,6 +2,9 @@ package mx.profeco.mensajeria;
 
 import io.smallrye.reactive.messaging.rabbitmq.OutgoingRabbitMQMetadata;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Event;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.event.TransactionPhase;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
@@ -17,7 +20,14 @@ public class EventoPublisher {
     @Channel("eventos")
     Emitter<EventoProfeco> emitter;
 
+    @Inject
+    Event<EventoProfeco> eventoConfirmado;
+
     public void publicar(EventoProfeco evento) {
+        eventoConfirmado.fire(evento);
+    }
+
+    void enviarTrasCommit(@Observes(during = TransactionPhase.AFTER_SUCCESS) EventoProfeco evento) {
         OutgoingRabbitMQMetadata metadata = OutgoingRabbitMQMetadata.builder()
                 .withRoutingKey(evento.getTipo())
                 .withContentType("application/json")
