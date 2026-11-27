@@ -19,7 +19,7 @@ import mx.profeco.entidades.Reporte;
 import mx.profeco.mensajeria.EventoProfeco;
 import mx.profeco.mensajeria.EventoPublisher;
 
-@Path("/api/multas")
+@Path("/multas")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class MultaResource {
