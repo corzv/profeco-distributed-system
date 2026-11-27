@@ -20,7 +20,7 @@ import mx.profeco.entidades.Reporte;
 import mx.profeco.mensajeria.EventoProfeco;
 import mx.profeco.mensajeria.EventoPublisher;
 
-@Path("/api/reportes")
+@Path("/reportes")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ReporteResource {
